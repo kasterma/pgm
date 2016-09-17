@@ -14,6 +14,7 @@ object HistogramDistribution {
 }
 
 class HistogramDistribution[T] (val vals: List[T], val probs: List[Double], val name: String) {
+  val cumulativeProbs = probs.scanLeft(0.0)(_ + _)
   if (vals.length != vals.distinct.length) {
     throw new DistributionError("HistogramDistribution: vals not all distinct")
   }
@@ -27,4 +28,10 @@ class HistogramDistribution[T] (val vals: List[T], val probs: List[Double], val 
   }
 
   override def toString: String = name
+
+  def sample: T = {
+    val rnd = Math.random()
+    val idx: Int = cumulativeProbs indexWhere (_ >= rnd)
+    vals.drop(idx - 1).head
+  }
 }
