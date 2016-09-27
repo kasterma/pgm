@@ -1,5 +1,7 @@
 package net.kasterma.pgm
 
+import scala.collection.immutable.IndexedSeq
+
 class Values(val xs: List[Double]) {
   def size = xs.length
 }
@@ -44,6 +46,16 @@ class Factor (scopes: List[Scope], values: Values) {
       println(rows(i-1) :+ values.xs(i-1) mkString " ")
     }
   }
+
+  def evidence(var_name: String, value: Double): Factor = {
+    val scope_idx: Int = scopes.indexWhere(x => x.name == var_name)
+    val stride = scopes drop scope_idx map (_.size) product
+    val stride2 = scopes drop (scope_idx + 1) map (_.size) product
+    val within_scope_idx = scopes(scope_idx).xs.indexWhere(_.equals(value))
+    val new_vals = values.xs.indices  filter (x => (x % stride) / stride2 == within_scope_idx) map {values.xs(_)} toList
+
+    Factor(scopes.take(scope_idx) ++ scopes.drop(scope_idx + 1), Values(new_vals))
+  }
 }
 
 object Factor {
@@ -66,6 +78,11 @@ object FactorBuilder {
 /// Factor("x", 1, 2, 3)("y", 4,5)(1,2,3,4,5,6)
 
 
-/// scala> import net.kasterma.pgm._
+/// import net.kasterma.pgm._
 /// val ff = Factor("x", 1, 2, 3)("y", 4,5)(1,2,3,4,5,6)
+/// ff.rows
+
+
+/// import net.kasterma.pgm._
+/// val ff = Factor("x", 1, 2, 3)("y", 4,5)("z", 11,22)(1,2,3,4,5,6,11,22,33,44,55,66)
 /// ff.rows
