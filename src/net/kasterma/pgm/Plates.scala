@@ -8,17 +8,17 @@ object PlateModel{
 }
 
 class PlateModel(val plates: List[Plate], val graph: Graph, val plate_assignment: Map[String, List[String]]) {
-  def full_eval():ValueGraph = {
+  def full_eval(plate_instances: Map[String, List[String]]): ValueGraph = {
     ValueGraph(Map.empty, graph.edges)
   }
 }
 
 object ValueGraph {
-  def apply(vals: Map[String, Double], edges: List[Edge]): ValueGraph = new ValueGraph(vals, edges)
+  def apply(vals: Map[String, Int], edges: List[Edge]): ValueGraph = new ValueGraph(vals, edges)
   def empty = new ValueGraph(Map.empty, List.empty)
 }
 
-class ValueGraph(val vals: Map[String, Double], val edges: List[Edge]) {
+class ValueGraph(val vals: Map[String, Int], val edges: List[Edge]) {
 
 }
 
@@ -32,5 +32,9 @@ object Plates {
         "grade" -> new BinaryNode((x,y) => x + y)),
         List(Edge("difficulty", "grade", 0), Edge("intelligence", "grade", 1))),
       Map("course" -> List("difficulty", "grade"), "student" -> List("intelligence", "grade")))
+
+    val vg = plate_model_1.full_eval(Map("course" -> List("econ101", "cs101"), "student" -> List("jan", "jaap", "jimbo")))
+
+    println(vg)
   }
 }
