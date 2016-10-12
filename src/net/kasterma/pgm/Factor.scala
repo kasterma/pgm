@@ -68,7 +68,7 @@ class Assignment (val assig_map: Map[String, Double], val index: Int) {
 
 class FactorError (message: String) extends Exception
 
-class Factor (scopes: List[Scope], values: Values) {
+class Factor (val scopes: List[Scope], val values: Values) {
   if ((scopes map (_.size) product) != values.size) {
     throw new FactorError("values column incorrect length")
   }
